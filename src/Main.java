@@ -7,7 +7,7 @@ public class Main {
         System.out.print("Welcome to the GPA Calculator. This calculator takes in the number of subjects you are taking" +
                 "\n and how much credits they are worth and prints out the calculated GPA ");
         System.out.print("\n\nHow many classes did you take?   ");
-        classCount = retrieveInteger(input);
+        classCount = retrieveInteger(input, 0, 30);
         System.out.println();
         Class[] classes = new Class[classCount];
         getClasses(classes, input);
@@ -56,7 +56,7 @@ public class Main {
             }
             if (choice.equals("no")) {
                 System.out.print("What class do you want to change?     ");
-                int classNum = retrieveInteger(input) - 1;
+                int classNum = retrieveInteger(input, 0, classes.length) - 1;
                 setClass(classes, classNum, input);
             } else if (choice.equals("all")) {
                 getClasses(classes, input);
@@ -72,16 +72,18 @@ public class Main {
         System.out.print("What was the class name?     ");
         String className = input.nextLine();
         System.out.print("What was the credit load?     ");
-        credWeight = retrieveInteger(input);
+        credWeight = retrieveInteger(input, 0, 5);
         System.out.print("What grade point did you receive?     ");
-        gradePoint = retrieveDouble(input);
+        gradePoint = retrieveDouble(input, 0, 4);
         classes[classNum] = new Class(className, credWeight, gradePoint);
     }
 
     public static void printReport(Class[] classes) {
         double gpaSum = 0.0;
+        int credits = 0;
         for (int num = 0; num < classes.length; num++) {
-            gpaSum += classes[num].getGradePoint();
+            gpaSum += classes[num].getGradePoint() * classes[num].getCredWeight();
+            credits += classes[num].getCredWeight();
             for (int i = 0; i < 60; i++) {
                 System.out.print("_");
             }
@@ -100,24 +102,30 @@ public class Main {
         for (int k = 0; k < 37; k++) {
             System.out.print(" ");
         }
-        double averageGPA = (Math.floor(gpaSum / classes.length * 100) / 100);
+        double averageGPA = (Math.floor((gpaSum / credits) * 100) / 100);
         System.out.print("| Average GPA:  " + averageGPA + "  |");
 
     }
-    public static double retrieveDouble(Scanner input) {
+    public static double retrieveDouble(Scanner input, int lowThresh, int highThresh) {
         while (true) {
             try {
-                return Double.parseDouble(input.nextLine());
+                double value = Double.parseDouble(input.nextLine());
+                if (value < lowThresh) { throw new IllegalArgumentException(); }
+                if (value > highThresh) { throw new IllegalArgumentException(); }
+                return value;
             } catch (Exception e) {
                 System.out.print("Sorry that input was invalid, please enter a valid answer     ");
             }
         }
     }
 
-    public static int retrieveInteger(Scanner input) {
+    public static int retrieveInteger(Scanner input, int lowThresh, int highThresh) {
         while (true) {
             try {
-                return Integer.parseInt(input.nextLine());
+                int value = Integer.parseInt(input.nextLine());
+                if (value < lowThresh) { throw new IllegalArgumentException(); }
+                if (value > highThresh) { throw new IllegalArgumentException(); }
+                return value;
             } catch (Exception e) {
                 System.out.print("Sorry that input was invalid, please enter a valid answer     ");
             }
